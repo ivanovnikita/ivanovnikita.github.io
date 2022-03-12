@@ -2059,16 +2059,10 @@ var _invoke_assert = Module["_invoke_assert"] = createExportWrapper("invoke_asse
 var _throw_exception = Module["_throw_exception"] = createExportWrapper("throw_exception");
 
 /** @type {function(...*):?} */
-var _fflush = Module["_fflush"] = createExportWrapper("fflush");
-
-/** @type {function(...*):?} */
 var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
 
 /** @type {function(...*):?} */
-var _free = Module["_free"] = createExportWrapper("free");
-
-/** @type {function(...*):?} */
-var _emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = createExportWrapper("emscripten_main_thread_process_queued_calls");
+var _fflush = Module["_fflush"] = createExportWrapper("fflush");
 
 /** @type {function(...*):?} */
 var _setThrew = Module["_setThrew"] = createExportWrapper("setThrew");
@@ -2096,6 +2090,9 @@ var stackRestore = Module["stackRestore"] = createExportWrapper("stackRestore");
 
 /** @type {function(...*):?} */
 var stackAlloc = Module["stackAlloc"] = createExportWrapper("stackAlloc");
+
+/** @type {function(...*):?} */
+var _free = Module["_free"] = createExportWrapper("free");
 
 /** @type {function(...*):?} */
 var ___cxa_can_catch = Module["___cxa_can_catch"] = createExportWrapper("__cxa_can_catch");

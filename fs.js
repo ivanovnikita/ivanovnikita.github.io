@@ -195,7 +195,7 @@ Module['FS_createDataFile']('/embed', 'file.txt', decodeBase64(fileData1), true,
     }
   
    }
-   loadPackage({"files": [{"filename": "/preloaded/file.txt", "start": 0, "end": 22}], "remote_package_size": 40, "package_uuid": "12fccb2c-6c7e-4fa5-af62-0d1311f291d8"});
+   loadPackage({"files": [{"filename": "/preloaded/file.txt", "start": 0, "end": 22}], "remote_package_size": 40, "package_uuid": "23962bf4-5494-47b8-873d-ccec7707c8c5"});
   
   })();
   
@@ -4987,9 +4987,6 @@ var asm = createWasm();
 var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__wasm_call_ctors");
 
 /** @type {function(...*):?} */
-var _malloc = Module["_malloc"] = createExportWrapper("malloc");
-
-/** @type {function(...*):?} */
 var _write_to_file = Module["_write_to_file"] = createExportWrapper("write_to_file");
 
 /** @type {function(...*):?} */
@@ -5005,7 +5002,7 @@ var ___errno_location = Module["___errno_location"] = createExportWrapper("__err
 var _free = Module["_free"] = createExportWrapper("free");
 
 /** @type {function(...*):?} */
-var _emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = createExportWrapper("emscripten_main_thread_process_queued_calls");
+var _malloc = Module["_malloc"] = createExportWrapper("malloc");
 
 /** @type {function(...*):?} */
 var _emscripten_stack_init = Module["_emscripten_stack_init"] = function() {

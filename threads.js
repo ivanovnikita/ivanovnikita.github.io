@@ -1651,9 +1651,12 @@ function createWasm() {
     wasmModule = module;
     // Instantiation is synchronous in pthreads and we assert on run dependencies.
     if (!ENVIRONMENT_IS_PTHREAD) {
-      // PTHREAD_POOL_DELAY_LOAD==1 (or no preloaded pool in use): do not wait up for the Workers to
-      // instantiate the Wasm module, but proceed with main() immediately.
-      removeRunDependency('wasm-instantiate');
+      var numWorkersToLoad = PThread.unusedWorkers.length;
+      PThread.unusedWorkers.forEach(function(w) { PThread.loadWasmModuleToWorker(w, function() {
+        // PTHREAD_POOL_DELAY_LOAD==0: we wanted to synchronously wait until the Worker pool
+        // has loaded up. If all Workers have finished loading up the Wasm Module, proceed with main()
+        if (!--numWorkersToLoad) removeRunDependency('wasm-instantiate');
+      })});
     }
   }
   // we can't run yet (except in a pthread, where we have a custom sync instantiator)
@@ -1852,6 +1855,11 @@ var ASM_CONSTS = {
   var PThread = {unusedWorkers:[],runningWorkers:[],tlsInitFunctions:[],initMainThread:function() {
         assert(!ENVIRONMENT_IS_PTHREAD);
   
+        var pthreadPoolSize = 1;
+        // Start loading up the Worker pool, if requested.
+        for (var i = 0; i < pthreadPoolSize; ++i) {
+          PThread.allocateUnusedWorker();
+        }
       },initWorker:function() {
       },pthreads:{},setExitStatus:function(status) {
         EXITSTATUS = status;
@@ -2986,12 +2994,6 @@ var asm = createWasm();
 var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__wasm_call_ctors");
 
 /** @type {function(...*):?} */
-var _malloc = Module["_malloc"] = createExportWrapper("malloc");
-
-/** @type {function(...*):?} */
-var _fflush = Module["_fflush"] = createExportWrapper("fflush");
-
-/** @type {function(...*):?} */
 var _sleep_in_another_thread = Module["_sleep_in_another_thread"] = createExportWrapper("sleep_in_another_thread");
 
 /** @type {function(...*):?} */
@@ -3004,7 +3006,7 @@ var ___errno_location = Module["___errno_location"] = createExportWrapper("__err
 var __emscripten_thread_init = Module["__emscripten_thread_init"] = createExportWrapper("_emscripten_thread_init");
 
 /** @type {function(...*):?} */
-var _free = Module["_free"] = createExportWrapper("free");
+var _fflush = Module["_fflush"] = createExportWrapper("fflush");
 
 /** @type {function(...*):?} */
 var _emscripten_current_thread_process_queued_calls = Module["_emscripten_current_thread_process_queued_calls"] = createExportWrapper("emscripten_current_thread_process_queued_calls");
@@ -3034,10 +3036,16 @@ var __emscripten_thread_free_data = Module["__emscripten_thread_free_data"] = cr
 var __emscripten_thread_exit = Module["__emscripten_thread_exit"] = createExportWrapper("_emscripten_thread_exit");
 
 /** @type {function(...*):?} */
+var _malloc = Module["_malloc"] = createExportWrapper("malloc");
+
+/** @type {function(...*):?} */
 var _memalign = Module["_memalign"] = createExportWrapper("memalign");
 
 /** @type {function(...*):?} */
 var _pthread_self = Module["_pthread_self"] = createExportWrapper("pthread_self");
+
+/** @type {function(...*):?} */
+var _free = Module["_free"] = createExportWrapper("free");
 
 /** @type {function(...*):?} */
 var _emscripten_stack_get_end = Module["_emscripten_stack_get_end"] = function() {
@@ -3071,8 +3079,8 @@ var stackAlloc = Module["stackAlloc"] = createExportWrapper("stackAlloc");
 /** @type {function(...*):?} */
 var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
 
-var __emscripten_main_thread_futex = Module['__emscripten_main_thread_futex'] = 3380;
-var __emscripten_allow_main_runtime_queued_calls = Module['__emscripten_allow_main_runtime_queued_calls'] = 3056;
+var __emscripten_main_thread_futex = Module['__emscripten_main_thread_futex'] = 3472;
+var __emscripten_allow_main_runtime_queued_calls = Module['__emscripten_allow_main_runtime_queued_calls'] = 3088;
 
 
 
