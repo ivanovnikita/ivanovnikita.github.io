@@ -1986,6 +1986,11 @@ var ASM_CONSTS = {
       return getTempRet0();
     }
 
+  function _print_hello_in_js()
+  {
+      console.log('Hello world!');
+  }
+
   function _setTempRet0(val) {
       setTempRet0(val);
     }
@@ -2031,6 +2036,7 @@ var asmLibraryArg = {
   "fd_write": _fd_write,
   "getTempRet0": _getTempRet0,
   "invoke_iii": invoke_iii,
+  "print_hello_in_js": _print_hello_in_js,
   "setTempRet0": _setTempRet0
 };
 var asm = createWasm();
@@ -2051,6 +2057,9 @@ var _get_allocated_message = Module["_get_allocated_message"] = createExportWrap
 
 /** @type {function(...*):?} */
 var _malloc = Module["_malloc"] = createExportWrapper("malloc");
+
+/** @type {function(...*):?} */
+var _call_js = Module["_call_js"] = createExportWrapper("call_js");
 
 /** @type {function(...*):?} */
 var _invoke_assert = Module["_invoke_assert"] = createExportWrapper("invoke_assert");
