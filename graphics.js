@@ -4289,6 +4289,38 @@ function GetCanvasWidth(){ return canvas.clientWidth; }
          ;
       }};
   
+  function requestPointerLock(target) {
+      if (target.requestPointerLock) {
+        target.requestPointerLock();
+      } else if (target.msRequestPointerLock) {
+        target.msRequestPointerLock();
+      } else {
+        // document.body is known to accept pointer lock, so use that to differentiate if the user passed a bad element,
+        // or if the whole browser just doesn't support the feature.
+        if (document.body.requestPointerLock
+          || document.body.msRequestPointerLock
+          ) {
+          return -3;
+        } else {
+          return -1;
+        }
+      }
+      return 0;
+    }
+  function _emscripten_exit_pointerlock() {
+      // Make sure no queued up calls will fire after this.
+      JSEvents.removeDeferredCalls(requestPointerLock);
+  
+      if (document.exitPointerLock) {
+        document.exitPointerLock();
+      } else if (document.msExitPointerLock) {
+        document.msExitPointerLock();
+      } else {
+        return -1;
+      }
+      return 0;
+    }
+
   function maybeCStringToJsString(cString) {
       // "cString > 2" checks if the input is a number, and isn't of the special
       // values we accept here, EMSCRIPTEN_EVENT_TARGET_* (which map to 0, 1, 2).
@@ -5989,6 +6021,30 @@ function GetCanvasWidth(){ return canvas.clientWidth; }
 
   function _emscripten_memcpy_big(dest, src, num) {
       HEAPU8.copyWithin(dest, src, src + num);
+    }
+
+  function _emscripten_request_pointerlock(target, deferUntilInEventHandler) {
+      target = findEventTarget(target);
+      if (!target) return -4;
+      if (!target.requestPointerLock
+        && !target.msRequestPointerLock
+        ) {
+        return -1;
+      }
+  
+      var canPerformRequests = JSEvents.canPerformEventHandlerRequests();
+  
+      // Queue this function call if we're not currently in an event handler and the user saw it appropriate to do so.
+      if (!canPerformRequests) {
+        if (deferUntilInEventHandler) {
+          JSEvents.deferCall(requestPointerLock, 2 /* priority below fullscreen */, [target]);
+          return 1;
+        } else {
+          return -2;
+        }
+      }
+  
+      return requestPointerLock(target);
     }
 
   function abortOnCannotGrowMemory(requestedSize) {
@@ -8689,6 +8745,7 @@ var asmLibraryArg = {
   "__syscall_getcwd": ___syscall_getcwd,
   "__syscall_ioctl": ___syscall_ioctl,
   "__syscall_open": ___syscall_open,
+  "emscripten_exit_pointerlock": _emscripten_exit_pointerlock,
   "emscripten_get_element_css_size": _emscripten_get_element_css_size,
   "emscripten_get_gamepad_status": _emscripten_get_gamepad_status,
   "emscripten_get_now": _emscripten_get_now,
@@ -8855,6 +8912,7 @@ var asmLibraryArg = {
   "emscripten_glVertexAttribPointer": _emscripten_glVertexAttribPointer,
   "emscripten_glViewport": _emscripten_glViewport,
   "emscripten_memcpy_big": _emscripten_memcpy_big,
+  "emscripten_request_pointerlock": _emscripten_request_pointerlock,
   "emscripten_resize_heap": _emscripten_resize_heap,
   "emscripten_run_script": _emscripten_run_script,
   "emscripten_sample_gamepad_data": _emscripten_sample_gamepad_data,
@@ -8956,7 +9014,7 @@ var asm = createWasm();
 var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__wasm_call_ctors");
 
 /** @type {function(...*):?} */
-var _UpdateDrawFrame = Module["_UpdateDrawFrame"] = createExportWrapper("UpdateDrawFrame");
+var _update_draw_frame = Module["_update_draw_frame"] = createExportWrapper("update_draw_frame");
 
 /** @type {function(...*):?} */
 var _main = Module["_main"] = createExportWrapper("main");
