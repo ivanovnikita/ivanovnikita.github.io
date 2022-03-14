@@ -195,7 +195,7 @@ Module['FS_createDataFile']('/embed', 'file.txt', decodeBase64(fileData1), true,
     }
   
    }
-   loadPackage({"files": [{"filename": "/preloaded/file.txt", "start": 0, "end": 22}], "remote_package_size": 40, "package_uuid": "a4300df1-ea8d-4292-8056-1427d133ba9b"});
+   loadPackage({"files": [{"filename": "/preloaded/file.txt", "start": 0, "end": 22}], "remote_package_size": 40, "package_uuid": "1289b6b2-d82f-442e-ba5c-e6bc28766b35"});
   
   })();
   

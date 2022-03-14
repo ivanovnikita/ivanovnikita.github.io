@@ -2062,6 +2062,9 @@ var _malloc = Module["_malloc"] = createExportWrapper("malloc");
 var _call_js = Module["_call_js"] = createExportWrapper("call_js");
 
 /** @type {function(...*):?} */
+var _invalid_memory_access = Module["_invalid_memory_access"] = createExportWrapper("invalid_memory_access");
+
+/** @type {function(...*):?} */
 var _invoke_assert = Module["_invoke_assert"] = createExportWrapper("invoke_assert");
 
 /** @type {function(...*):?} */
